@@ -19,7 +19,7 @@ Bot Kejar ID adalah sebuah bot otomatis yang dibuat untuk membantu menyelesaikan
 
    pip install selenium colorama webdriver_manager requests cryptography
 
-   python run.pyc
+   python run.py
 
 
 
