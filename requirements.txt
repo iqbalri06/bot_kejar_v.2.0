@@ -3,3 +3,5 @@ colorama==0.4.6
 webdriver_manager==4.0.1
 requests==2.31.0
 cryptography==42.0.2
+licensing==21.0.0
+cryptolens==0.1.0
