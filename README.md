@@ -58,15 +58,6 @@ python run.py
 - 🔄 Update secara berkala
 - 📊 Monitor penggunaan secara rutin
 
-## 🤝 Bergabung & Berkontribusi
-
-Jadilah bagian dari revolusi otomatisasi jurnal:
-
-- 🐛 Laporkan bug dan berikan feedback
-- 💫 Usulkan fitur inovatif
-- 🔧 Kontribusi kode
-- 📚 Tingkatkan dokumentasi
-
 ## 📞 Hubungi Kami
 
 <div align="center">
