@@ -75,33 +75,3 @@ Bot Kejar ID dilindungi di bawah [Lisensi MIT](LICENSE).
 
 ### 💫 Buat Pengisian Jurnal Lebih Mudah dengan Bot Kejar ID! 
 
-</div>
-
-<style>
-body {
-   background-color: #f8f9fa;
-}
-h1, h2, h3 {
-   color: #2E86C1;
-   font-weight: bold;
-}
-p, li {
-   color: #1C2833;
-   line-height: 1.6;
-}
-code {
-   background-color: #F4F6F7;
-   color: #C0392B;
-   padding: 2px 5px;
-   border-radius: 4px;
-}
-table {
-   width: 100%;
-   border-collapse: collapse;
-   margin: 20px 0;
-}
-th, td {
-   padding: 12px;
-   border: 1px solid #ddd;
-}
-</style>
