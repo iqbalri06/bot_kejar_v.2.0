@@ -1,53 +1,80 @@
-# run.py
-import os
+from cryptography.fernet import Fernet
+import base64
 import sys
+import os
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+import importlib.util
 from colorama import init, Fore, Style
+import hashlib
+import platform
 
-init()
+def get_secure_salt():
+    components = [
+        bytes([107, 101, 106, 97, 114]), 
+        str(os.getenv('NUMBER_OF_PROCESSORS', '')).encode(),
+        str(os.getenv('PROCESSOR_IDENTIFIER', '')).encode(),
+        platform.node().encode()
+    ]
+    return hashlib.pbkdf2_hmac(
+        'sha256', 
+        b''.join(components), 
+        hashlib.sha256(platform.machine().encode()).digest(),
+        150000
+    )[:16]
 
-def run_encrypted():
+def generate_key(password):
+    salt = get_secure_salt()
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
+    return key
+
+def get_secure_key():
+    key_components = [
+        bytes([98, 111, 116, 75, 101, 106, 97, 114]),
+        bytes([73, 68, 50, 48, 50, 53, 33, 64]),       
+        bytes([35, 36, 37, 94, 38, 42, 40, 41])       
+    ]
+    
+    hw_id = hashlib.md5(''.join([
+        os.name,
+        os.getenv('COMPUTERNAME', ''),
+        os.getenv('USERNAME', '')
+    ]).encode()).hexdigest()
+    
+    combined = b''.join(key_components) + hw_id.encode()
+    return hashlib.sha256(combined).digest()[:32]
+
+def decrypt_and_run():
     try:
-        # Check if file exists and is readable
-        if not os.path.exists('enc_kejar.py'):
-            print(f"{Fore.RED}[-] Error: enc_kejar.py file not found{Style.RESET_ALL}")
-            sys.exit(1)
-            
-        print(f"{Fore.CYAN}[*] Starting script execution...{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}[*] Attempting to import enc_kejar.py...{Style.RESET_ALL}")
+        init()
         
-        # Force reload if already imported
-        if 'enc_kejar' in sys.modules:
-            del sys.modules['enc_kejar']
-            
-        try:
-            # Import with more detailed error catching
-            import enc_kejar
-            print(f"{Fore.GREEN}[+] Successfully imported enc_kejar.py{Style.RESET_ALL}")
-            
-        except SyntaxError as se:
-            print(f"{Fore.RED}[-] Syntax error in enc_kejar.py: {str(se)}{Style.RESET_ALL}")
-            return
-        except IndentationError as ie:
-            print(f"{Fore.RED}[-] Indentation error in enc_kejar.py: {str(ie)}{Style.RESET_ALL}")
-            return
-            
-        # Check for main function
-        if hasattr(enc_kejar, 'main'):
-            print(f"{Fore.CYAN}[*] Executing main function...{Style.RESET_ALL}")
-            enc_kejar.main()
-        elif hasattr(enc_kejar, 'run'):
-            print(f"{Fore.CYAN}[*] Executing run function...{Style.RESET_ALL}")
-            enc_kejar.run()
+        key = base64.urlsafe_b64encode(get_secure_key())
+        f = Fernet(key)
+        
+        with open('encrypted_kejar.bin', 'rb') as file:
+            encrypted_data = file.read()
+        
+        decrypted_code = f.decrypt(encrypted_data)
+        
+        spec = importlib.util.spec_from_loader('kejar_bot', loader=None)
+        module = importlib.util.module_from_spec(spec)
+        
+        exec(decrypted_code, module.__dict__)
+        
+        if hasattr(module, 'main'):
+            module.main()
         else:
-            print(f"{Fore.RED}[-] No main() or run() function found in enc_kejar.py{Style.RESET_ALL}")
+            raise ImportError("Invalid module structure")
             
-    except ImportError as ie:
-        print(f"{Fore.RED}[-] Import error: {str(ie)}{Style.RESET_ALL}")
-        print(f"{Fore.YELLOW}[!] Python path: {sys.path}{Style.RESET_ALL}")
     except Exception as e:
-        print(f"{Fore.RED}[-] Runtime error: {str(e)}{Style.RESET_ALL}")
-        print(f"{Fore.YELLOW}[!] Error details: {type(e).__name__}{Style.RESET_ALL}")
-        print(f"{Fore.YELLOW}[!] Error line: {sys.exc_info()[2].tb_lineno}{Style.RESET_ALL}")
+        print(f"{Fore.RED}Error: {str(e)}{Style.RESET_ALL}")
+        sys.exit(1)
 
 if __name__ == "__main__":
-    run_encrypted()
+    decrypt_and_run()
