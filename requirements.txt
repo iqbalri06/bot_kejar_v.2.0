@@ -1,4 +1,0 @@
-<a href="javascript:void(0)" class="font-13 text-decoration-none habit-weekly" data-habit-id="e4c7dfac-2fc8-4e25-af5a-6834df7b69f5">Isi Jurnal</a>
-
-'a.font-13.text-decoration-none.habit-weekly[data-habit-id="5264546d-c9b3-445d-8706-9299ba517636
-saya ingin mengencript kode ini dan berikan untuk menjalannya juga gunakan encript yang berlapis dan terbaik, saya ingin teks encript yaitu "iqbal roudatul irfan"
